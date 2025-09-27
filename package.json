@@ -11,5 +11,8 @@
     "url": "https://github.com/s1ckret/s7-server"
   },
   "author": "s1ckret",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
 }
