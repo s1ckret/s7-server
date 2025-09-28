@@ -7,6 +7,7 @@
     "tailwind:css": "postcss public/stylesheets/tailwind.css -o public/stylesheets/build.css"
   },
   "dependencies": {
+    "@codegenie/serverless-express": "^4.17.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "ejs": "~2.6.1",
