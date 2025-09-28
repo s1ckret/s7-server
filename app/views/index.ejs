@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>
+    <%= title %>
+  </title>
+  <link rel='stylesheet' href='/stylesheets/build.css' />
+</head>
+
+<body>
+  <div>
+    <header class="text-center mb-8 sm:mb-10">
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-amber-700">S7 Tracker</h1>
+    </header>
+
+    <!-- Logging Form (Column 1 & 2) - Takes full width on mobile -->
+    <div id="logging-form" class="bg-white p-4">
+      <h2 class="text-2xl font-semibold mb-6 text-gray-800">Час</h2>
+
+      <form id="logForm" class="space-y-6">
+
+        <!-- 1. Exercise Select -->
+        <div>
+          <label for="exercise" class="block text-sm font-medium text-gray-700 mb-1">Вправа</label>
+          <select id="exercise" required
+            class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition duration-150 ease-in-out p-3 h-12">
+            <option value="" disabled selected>Вибрати вправу</option>
+            <option value="sprints">Вправа Мака (17 набоїв)</option>
+            <option value="lifting">Вскиди з low-ready (10 набоїв)</option>
+            <option value="swimming">Гонки зліва направо (10 набоїв)</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="user" class="block text-sm font-medium text-gray-700 mb-1">Позивний</label>
+          <select id="user" required
+            class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition duration-150 ease-in-out p-3 h-12">
+            <option value="" disabled selected>Вибрати позивний</option>
+            <option value="sprints">Койот</option>
+            <option value="lifting">Сіт</option>
+            <option value="swimming">Онікс</option>
+            <option value="rowing">Лор</option>
+            <option value="yoga">Голка</option>
+          </select>
+        </div>
+
+
+
+        <!-- Stopwatch and Manual Time Input -->
+        <div class="mt-3">
+          <h3 class="text-xl font-medium text-gray-800 mb-1">Секундомір</h3>
+          <h4 class="font-medium text-gray-800 mb-3">Можна вручну змінювати кожне поле (хв:с.мс)</h3>
+
+            <!-- 3. Stopwatch Display - Now Editable Fields -->
+            <div
+              class="text-center text-8xl p-4 bg-gray-900 text-green-400 rounded-xl shadow-inner mb-4 flex justify-center items-baseline">
+              <!-- Minutes -->
+              <span id="displayMinutes"
+                class="stopwatch-component focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-md transition duration-150"
+                contenteditable="true" data-unit="minutes" tabindex="0">00</span>
+              <span class="text-green-600 stopwatch-component">:</span>
+              <!-- Seconds -->
+              <span id="displaySeconds"
+                class="stopwatch-component focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-md transition duration-150"
+                contenteditable="true" data-unit="seconds" tabindex="0">00</span>
+              <span class="text-green-600 stopwatch-component">.</span>
+              <!-- Milliseconds -->
+              <span id="displayMilliseconds"
+                class="stopwatch-component focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-md transition duration-150"
+                contenteditable="true" data-unit="milliseconds" tabindex="0">000</span>
+            </div>
+
+            <!-- Stopwatch Controls -->
+            <div class="flex flex-col sm:flex-row justify-center space-y-2 sm:space-y-0 sm:space-x-4 mb-6">
+              <!-- Buttons use flex-1 to distribute width evenly in a row, but stack nicely in a column on very narrow screens -->
+              <button type="button" id="resetBtn"
+                class="flex-1 max-w-xs px-4 py-2 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 transition duration-150">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-2" viewBox="0 0 20 20"
+                  fill="currentColor">
+                  <path
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM6.5 9a.5.5 0 00-.5.5v3a.5.5 0 001 0V10h2.5a.5.5 0 000-1h-3z" />
+                </svg>
+                Скинути
+              </button>
+              <button type="button" id="stopBtn" disabled
+                class="flex-1 max-w-xs px-4 py-2 bg-yellow-500 text-white font-semibold rounded-lg shadow-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 transition duration-150 disabled:opacity-50">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-2" viewBox="0 0 20 20"
+                  fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-9-5a1 1 0 00-1 1v8a1 1 0 001 1h2a1 1 0 001-1V6a1 1 0 00-1-1H9z"
+                    clip-rule="evenodd" />
+                </svg>
+                Стоп
+              </button>
+              <button type="button" id="startBtn"
+                class="flex-1 max-w-xs px-4 py-2 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-150">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-2" viewBox="0 0 20 20"
+                  fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                    clip-rule="evenodd" />
+                </svg>
+                Старт
+              </button>
+            </div>
+
+        </div>
+
+        <!-- 5. Number of Shots/Reps Input and HIT Button -->
+        <div>
+          <label for="shots" class="block text-sm font-medium text-gray-700 mb-1">Влучання</label>
+          <div class="flex space-x-3 sm:space-x-4">
+            <input type="number" id="shots" min="0" required placeholder="e.g., 10" value="0"
+              class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 h-12">
+
+            <button type="button" id="hitBtn"
+              class="flex-shrink-0 px-8 py-3 bg-red-600 text-white font-bold rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-150 transform hover:scale-[1.05] h-12">
+              +1
+            </button>
+          </div>
+        </div>
+
+        <!-- 6. Submit Button -->
+        <button type="submit"
+          class="w-full py-3 mt-16 bg-indigo-600 text-white font-extrabold rounded-lg shadow-xl hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50 transition duration-300 transform hover:scale-[1.01]">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline mr-2" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Зберегти
+        </button>
+      </form>
+
+      <!-- Feedback Message -->
+      <div id="message" class="mt-4 text-center font-medium"></div>
+
+    </div>
+</body>
+<script>
+
+  let intervalId = null;
+  let totalMilliseconds = 0; // The source of truth for the stopwatch time (in milliseconds)
+
+  const displayMinutes = document.getElementById('displayMinutes');
+  const displaySeconds = document.getElementById('displaySeconds');
+  const displayMilliseconds = document.getElementById('displayMilliseconds');
+
+  const startBtn = document.getElementById('startBtn');
+  const stopBtn = document.getElementById('stopBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const messageElement = document.getElementById('message'); // Reference the feedback element
+
+  /**
+   * Converts total milliseconds into M, S, and MS components.
+   * @param {number} ms - The total time in milliseconds.
+   * @returns {{minutes: string, seconds: string, milliseconds: string}}
+   */
+  const calculateTimeComponents = (ms) => {
+    const totalSeconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    const milliseconds = ms % 1000;
+
+    const pad = (num, length = 2) => num.toString().padStart(length, '0');
+
+    return {
+      minutes: pad(minutes),
+      seconds: pad(seconds),
+      milliseconds: pad(milliseconds, 3)
+    };
+  };
+
+
+  // Updates the three digital displays based on totalMilliseconds
+  const updateDisplay = () => {
+    // Prevent updating the display while the user is actively typing/editing
+    if (document.activeElement === displayMinutes ||
+      document.activeElement === displaySeconds ||
+      document.activeElement === displayMilliseconds) {
+      return;
+    }
+
+    const time = calculateTimeComponents(totalMilliseconds);
+
+    displayMinutes.textContent = time.minutes;
+    displaySeconds.textContent = time.seconds;
+    displayMilliseconds.textContent = time.milliseconds;
+  };
+
+  /**
+   * Parses text content from the three display fields into total milliseconds.
+   * @returns {number | null} Total milliseconds or null if input is invalid.
+   */
+  const parseTimeFromFields = (mStr, sStr, msStr) => {
+    // Trim whitespace and ensure only digits remain
+    const m = parseInt(mStr.trim().replace(/[^\d]/g, ''), 10);
+    const s = parseInt(sStr.trim().replace(/[^\d]/g, ''), 10);
+    const ms = parseInt(msStr.trim().replace(/[^\d]/g, ''), 10);
+
+    // Check for NaN and bounds (seconds max 59, milliseconds max 999)
+    if (isNaN(m) || isNaN(s) || isNaN(ms) ||
+      m < 0 || s < 0 || ms < 0 || s >= 60 || ms >= 1000) {
+      return null; // Indicates invalid time input
+    }
+
+    return m * 60 * 1000 + s * 1000 + ms;
+  };
+
+  /**
+   * Enables or disables contentEditable property on the time fields.
+   */
+  const setEditable = (isEditable) => {
+    const elements = [displayMinutes, displaySeconds, displayMilliseconds];
+    elements.forEach(el => {
+      el.contentEditable = isEditable ? 'true' : 'false';
+      if (isEditable) {
+        el.classList.add('focus:ring-indigo-500');
+      } else {
+        el.classList.remove('focus:ring-indigo-500');
+      }
+    });
+  }
+
+  const startStopwatch = () => {
+    if (intervalId !== null) return; // Already running
+
+    // Disable editing while running
+    setEditable(false);
+
+    startBtn.disabled = true;
+    stopBtn.disabled = false;
+
+    // Use the time currently in the display fields as the starting point
+    const parsedMs = parseTimeFromFields(
+      displayMinutes.textContent,
+      displaySeconds.textContent,
+      displayMilliseconds.textContent
+    );
+
+    if (parsedMs === null) {
+      messageElement.textContent = "Error: Invalid time in fields. Resetting timer to 0.";
+      messageElement.classList.add('text-red-500');
+      totalMilliseconds = 0;
+    } else {
+      totalMilliseconds = parsedMs;
+      messageElement.textContent = ""; // Clear message on successful start
+      messageElement.classList.remove('text-red-500');
+    }
+
+
+    intervalId = setInterval(() => {
+      totalMilliseconds += 10;
+      updateDisplay();
+    }, 10);
+  };
+
+  const stopStopwatch = () => {
+    if (intervalId !== null) {
+      clearInterval(intervalId);
+      intervalId = null;
+    }
+    startBtn.disabled = false;
+    stopBtn.disabled = true;
+
+    // Re-enable editing when stopped
+    setEditable(true);
+
+    // Re-format the display one last time to ensure padding is correct
+    updateDisplay();
+  };
+
+  const resetStopwatch = () => {
+    stopStopwatch();
+    totalMilliseconds = 0;
+    updateDisplay();
+    messageElement.textContent = ""; // Clear any previous error messages
+    messageElement.classList.remove('text-red-500');
+  };
+
+  // Listener for when the user finishes manually editing a time field
+  const handleTimeBlur = (e) => {
+    // Get current displayed values from all fields
+    const mStr = displayMinutes.textContent;
+    const sStr = displaySeconds.textContent;
+    const msStr = displayMilliseconds.textContent;
+
+    // Attempt to parse the time
+    const parsedMs = parseTimeFromFields(mStr, sStr, msStr);
+
+    if (parsedMs !== null) {
+      // If valid, update the source of truth and clear message
+      totalMilliseconds = parsedMs;
+      updateDisplay(); // Re-format to ensure canonical padding (e.g., 5 -> 05)
+      messageElement.textContent = "";
+      messageElement.classList.remove('text-red-500');
+    } else {
+      // If invalid, show error message and revert to the current totalMilliseconds value
+      messageElement.textContent = `Invalid time entered in ${e.target.getAttribute('data-unit')}. Check constraints (Seconds 0-59, Milliseconds 0-999). Time reverted.`;
+      messageElement.classList.add('text-red-500');
+      // Revert the display of all fields back to totalMilliseconds value
+      updateDisplay();
+    }
+  };
+
+  // Initialize display with 00:00.000
+  updateDisplay();
+  setEditable(true); // Ensure editable is set on load
+
+  // Attach listeners to stopwatch buttons
+  startBtn.addEventListener('click', startStopwatch);
+  stopBtn.addEventListener('click', stopStopwatch);
+  resetBtn.addEventListener('click', resetStopwatch);
+
+  // Attach listeners for individual field editing
+  displayMinutes.addEventListener('blur', handleTimeBlur);
+  displaySeconds.addEventListener('blur', handleTimeBlur);
+  displayMilliseconds.addEventListener('blur', handleTimeBlur);
+
+  // --- Shot Counter Logic ---
+  const shotsInput = document.getElementById('shots');
+  const hitBtn = document.getElementById('hitBtn');
+
+  const incrementShots = () => {
+    // Get current value, default to 0 if null or empty, convert to integer
+    let currentValue = parseInt(shotsInput.value) || 0;
+
+    // Ensure we start at 0 or higher
+    if (currentValue < 0) {
+      currentValue = 0;
+    }
+
+    shotsInput.value = currentValue + 1;
+  };
+
+  // Attach listener to Hit button
+  hitBtn.addEventListener('click', incrementShots);
+</script>
+
+</html>
