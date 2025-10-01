@@ -1,0 +1,11 @@
+#!/usr/bin/env node
+
+import cdk from 'aws-cdk-lib';
+import LambdaStack from '../lib/lambda.js';
+
+const env = { account: '497404809514', region: 'eu-central-1' }
+const serviceName = 's7-server'
+
+const app = new cdk.App();
+
+new LambdaStack(app, `${serviceName}-lambda`, { env: env, serviceName: serviceName });
