@@ -1,14 +1,25 @@
-var createError = require('http-errors');
-var express = require('express');
-var expressLayouts = require('express-ejs-layouts');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+import createError from 'http-errors';
+import express from 'express';
+import session from 'express-session';
+import expressLayouts from 'express-ejs-layouts';
+import path from 'path';
+import cookieParser from 'cookie-parser';
+import logger from 'morgan';
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+import { DynamoDBStore } from '@pwrdrvr/dynamodb-session-store';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+
+import indexRouter from './routes/index.js';
+import usersRouter from './routes/users.js';
 
 var app = express();
+const dynamoDBClient = new DynamoDBClient({});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -17,6 +28,22 @@ app.set("layout extractScripts", true)
 
 // ONLY for development - do not use in production!
 // app.set('view cache', false);
+
+app.use(
+  session({
+    store: new DynamoDBStore({
+      tableName: 's7-server-sessions',
+      dynamoDBClient,
+      touchAfter: 60 * 60, // 60 minutes in seconds
+    }),
+    secret: 'yeah-change-this',
+    cookie: {
+      maxAge: 14 * 24 * 60 * 60 * 1000, // 14 days in milliseconds
+    },
+    resave: false,
+    saveUninitialized: false,
+  }),
+);
 
 app.use(expressLayouts);
 app.use(logger('dev'));
@@ -29,12 +56,12 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -44,4 +71,4 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-module.exports = app;
+export default app;

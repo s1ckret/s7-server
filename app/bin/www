@@ -3,10 +3,11 @@
 /**
  * Module dependencies.
  */
+import http from 'http';
+import app from '../app.js'; // Note the mandatory .js extension for relative local imports
+import debugFactory from 'debug';
 
-var app = require('../app');
-var debug = require('debug')('s7:server');
-var http = require('http');
+const debug = debugFactory('s7:server');
 
 /**
  * Get port from environment and store in Express.
