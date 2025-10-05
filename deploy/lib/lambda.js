@@ -12,7 +12,7 @@ export default class LambdaStack extends Stack {
   constructor(scope, id, props) {
     super(scope, id, props);
 
-    const s7Lambda = new lambda.Function(this, `${props.serviceName}-lambda`, {
+    this.s7Lambda = new lambda.Function(this, `${props.serviceName}-lambda`, {
       functionName: `${props.serviceName}-lambda`,
       runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'lambda.handler',
@@ -26,6 +26,13 @@ export default class LambdaStack extends Stack {
     new cdk.CfnOutput(this, 'FunctionUrlOutput', {
       value: functionUrl.url,
     });
+  }
+
+  /**
+   * @return {lambda.Function}
+   */
+  getLambda() {
+    return this.lambda;
   }
 }
 

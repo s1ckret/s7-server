@@ -10,6 +10,6 @@ const serviceName = 's7-server'
 const app = new cdk.App();
 cdk.Tags.of(app).add('project', 's7');
 
-new LambdaStack(app, `${serviceName}-lambda`, { env: env, serviceName: serviceName });
+const lambdaStack = new LambdaStack(app, `${serviceName}-lambda`, { env: env, serviceName: serviceName });
 
-new StorageStack(app, `${serviceName}-storage`, { env: env, serviceName: serviceName });
+new StorageStack(app, `${serviceName}-storage`, { env: env, serviceName: serviceName, lambda: lambdaStack.getLambda() });

@@ -21,7 +21,7 @@ export default class StorageStack extends Stack {
     constructor(scope, id, props) {
         super(scope, id, props);
 
-        const { serviceName } = props;
+        const { serviceName, lambda } = props;
 
         const table = new dynamodb.Table(this, `${serviceName}-sessions`, {
             tableName: `${serviceName}-sessions`,
@@ -34,5 +34,7 @@ export default class StorageStack extends Stack {
             description: `DynamoDB table for ${serviceName} service express sessions.`,
             timeToLiveAttribute: 'expires'
         });
+
+        table.grantReadWriteData(lambda); 
     }
 }
