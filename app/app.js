@@ -5,6 +5,7 @@ import expressLayouts from 'express-ejs-layouts';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
+import 'dotenv/config'
 
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -32,11 +33,11 @@ app.set("layout extractScripts", true)
 app.use(
   session({
     store: new DynamoDBStore({
-      tableName: 's7-server-sessions',
+      tableName: process.env.DYNAMODB_SESSION_TABLE_NAME,
       dynamoDBClient,
       touchAfter: 60 * 60, // 60 minutes in seconds
     }),
-    secret: 'yeah-change-this',
+    secret: process.env.SESSION_SECRET,
     cookie: {
       maxAge: 14 * 24 * 60 * 60 * 1000, // 14 days in milliseconds
     },
