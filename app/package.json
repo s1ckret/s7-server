@@ -16,6 +16,7 @@
     "@pwrdrvr/dynamodb-session-store": "^1.1.0",
     "connect-dynamodb": "^3.0.5",
     "cookie-parser": "~1.4.4",
+    "csrf-csrf": "^4.0.3",
     "debug": "~2.6.9",
     "dotenv": "^17.2.3",
     "ejs": "~2.6.1",

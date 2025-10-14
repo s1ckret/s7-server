@@ -2,6 +2,7 @@ import createError from 'http-errors';
 import express from 'express';
 import session from 'express-session';
 import expressLayouts from 'express-ejs-layouts';
+import { doubleCsrf } from "csrf-csrf";
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
@@ -23,6 +24,23 @@ import usersRouter from './routes/users.js';
 
 var app = express();
 
+const {
+  doubleCsrfProtection,
+  generateToken,
+} = doubleCsrf({
+  getSecret: () => process.env.CSRF_SECRET,
+  getSessionIdentifier: (req) => req.session.id,
+  getCsrfTokenFromRequest: (req) => {
+    return req.headers['x-csrf-token'] ||
+      req.query._csrf ||
+      req.body._csrf;
+  },
+  cookieName: process.env.NODE_ENV === 'production' ? "__Host-psifi.x-csrf-token" : "x-csrf-token",
+  cookieOptions: {
+    secure: process.env.NODE_ENV === 'production'
+  },
+});
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -35,7 +53,6 @@ app.use(expressLayouts);
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(
   session({
@@ -53,10 +70,27 @@ app.use(
   }),
 );
 app.use(passport.authenticate('session'));
+app.use(cookieParser());
+app.use(doubleCsrfProtection);
+
+// Set csrfToken into ejs template
+app.use(function (req, res, next) {
+  res.locals._csrfToken = req.csrfToken()
+  next()
+})
+
+const isAuthenticated = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.status(401).json({
+    message: "Access denied. Please log in.",
+  });
+};
 
 app.use('/', indexRouter);
 app.use('/', authRouter);
-app.use('/users', usersRouter);
+app.use('/users', isAuthenticated, usersRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
