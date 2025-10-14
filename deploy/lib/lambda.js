@@ -19,7 +19,7 @@ export default class LambdaStack extends Stack {
       code: lambda.Code.fromAsset('../app'),
     });
 
-    const functionUrl = s7Lambda.addFunctionUrl({
+    const functionUrl = this.s7Lambda.addFunctionUrl({
       authType: lambda.FunctionUrlAuthType.NONE,
     });
 
@@ -32,7 +32,7 @@ export default class LambdaStack extends Stack {
    * @return {lambda.Function}
    */
   getLambda() {
-    return this.lambda;
+    return this.s7Lambda;
   }
 }
 

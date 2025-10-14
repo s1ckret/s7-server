@@ -5,6 +5,7 @@ import expressLayouts from 'express-ejs-layouts';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
+import passport from 'passport';
 import 'dotenv/config'
 
 import { fileURLToPath } from 'url';
@@ -14,13 +15,13 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 import { DynamoDBStore } from '@pwrdrvr/dynamodb-session-store';
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { ddbClient } from './services/dynamo.js';
 
 import indexRouter from './routes/index.js';
+import authRouter from './routes/auth.js';
 import usersRouter from './routes/users.js';
 
 var app = express();
-const dynamoDBClient = new DynamoDBClient({});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -30,11 +31,17 @@ app.set("layout extractScripts", true)
 // ONLY for development - do not use in production!
 // app.set('view cache', false);
 
+app.use(expressLayouts);
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(
   session({
     store: new DynamoDBStore({
       tableName: process.env.DYNAMODB_SESSION_TABLE_NAME,
-      dynamoDBClient,
+      ddbClient,
       touchAfter: 60 * 60, // 60 minutes in seconds
     }),
     secret: process.env.SESSION_SECRET,
@@ -45,15 +52,10 @@ app.use(
     saveUninitialized: false,
   }),
 );
-
-app.use(expressLayouts);
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(passport.authenticate('session'));
 
 app.use('/', indexRouter);
+app.use('/', authRouter);
 app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler

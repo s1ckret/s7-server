@@ -10,6 +10,8 @@
   },
   "type": "module",
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.902.0",
+    "@aws-sdk/lib-dynamodb": "^3.902.0",
     "@codegenie/serverless-express": "^4.17.0",
     "@pwrdrvr/dynamodb-session-store": "^1.1.0",
     "connect-dynamodb": "^3.0.5",
@@ -23,7 +25,7 @@
     "http-errors": "~1.6.3",
     "morgan": "~1.9.1",
     "passport": "^0.7.0",
-    "passport-google-oauth2": "^0.2.0"
+    "passport-google-oidc": "^0.1.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.13",
