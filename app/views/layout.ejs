@@ -16,9 +16,34 @@
   <link rel='stylesheet' href='/stylesheets/build.css' />
 </head>
 
-<body>
-  <%- body %>
-    <!-- Your common JavaScript links -->
+<body class="bg-gray-50 min-h-screen">
+  <!-- Mobile Navigation -->
+  <nav class="w-full bg-white py-3">
+    <div class="flex items-center justify-between px-4 border-b border-gray-500">
+      <a href="/" class="font-bold text-xl tracking-tight">S7</a>
+      <% if (currentUser && currentUser.callsign && currentUser.approved) { %>
+        <div class="flex items-center gap-4 ">
+          <% if (currentUser.admin) { %>
+            <a href="/admin" class="text-red-600 font-semibold">Адмін</a>
+          <% } %>
+          <a href="/profile" class="text-blue-600">Привіт, <%= currentUser.callsign %></a>
+        </div>
+      <% } %>
+    </div>
+    <% if (currentUser && currentUser.callsign && currentUser.approved) { %>
+      <div class="flex items-center gap-4 px-4 border-b mt-2">
+        <a href="/leaderboard" class="text-blue-600">Лідери</a>
+        <a href="/exercises" class="text-blue-600">Вправи</a>
+        <a href="/log" class="text-blue-600">Журнал</a>
+        <a href="/time" class="text-green-600 font-bold">Час</a>
+      </div>
+    <% } %>
+    <!-- If not verified or not logged in, show only logo -->
+  </nav>
+  <main class="px-4">
+    <%- body %>
+  </main>
+  <!-- Your common JavaScript links -->
 </body>
 
 <%- script %>
