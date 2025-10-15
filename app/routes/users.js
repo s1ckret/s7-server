@@ -6,7 +6,7 @@ router.get('/', function (req, res, next) {
 });
 
 router.get('/protected', function (req, res, next) {
-  res.send('protected!\n ' + JSON.stringify(req.session) + "\n\n" + JSON.stringify(req.user));
+  res.send('protected!\n ' + "\n\n" + JSON.stringify(req.user));
 });
 
 export default router;

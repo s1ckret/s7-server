@@ -1,1 +1,7 @@
-<h1>Hi!</h1>
+<h1 class="text-6xl">Hi!</h1>
+<% if (currentUser) { %>
+  <li class="text-base">Welcome, <%= currentUser.id %>!</li>
+  <li><a href="/logout">Logout</a></li>
+<% } else { %>
+  <li><a href="/login">Login</a></li>
+<% } %>
