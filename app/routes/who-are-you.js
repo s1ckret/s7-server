@@ -1,5 +1,5 @@
 import express from 'express';
-import { updateUser } from '../services/users-service.js';
+import { User } from '../services/users-service.js';
 
 const router = express.Router();
 
@@ -16,7 +16,7 @@ router.post('/', async (req, res, next) => {
       return res.render('who-are-you', { title: 'Who Are You', error: 'Callsign is required' });
     }
     // Save callsign to user (persist in DB)
-    await updateUser(req.user.id, { callsign });
+  await User.update(req.user.id, { callsign });
     req.user.callsign = callsign; // update session user
     res.redirect('/');
   } catch (err) {

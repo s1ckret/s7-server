@@ -24,6 +24,7 @@ import authRouter from './routes/auth.js';
 import usersRouter from './routes/users.js';
 import whoAreYouRouter from './routes/who-are-you.js';
 import waitForApproveRouter from './routes/wait-for-approve.js';
+import adminRouter from './routes/admin.js';
 import { requireAuth } from './middleware/requireAuth.js';
 
 var app = express();
@@ -91,6 +92,13 @@ app.use('/', authRouter);
 app.use('/users', usersRouter);
 app.use('/who-are-you', whoAreYouRouter);
 app.use('/wait-for-approve', waitForApproveRouter);
+app.use('/admin', function (req, res, next) {
+  if (req.user && req.user.admin) {
+    next()
+  } else {
+    res.status(403).send('Forbidden')
+  }
+}, adminRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

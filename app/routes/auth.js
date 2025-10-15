@@ -2,7 +2,7 @@ import express from 'express';
 import passport from 'passport';
 import GoogleStrategy from 'passport-google-oidc';
 
-import { readUser, createUser } from '../services/users-service.js'
+import { User } from '../services/users-service.js'
 
 const router = express.Router();
 
@@ -33,7 +33,7 @@ passport.serializeUser(function (user, cb) {
 passport.deserializeUser(function (id, cb) {
   process.nextTick(async function () {
     try {
-      const user = await readUser(id);
+      const user = await User.get(id);
       cb(null, user);
     } catch (error) {
       cb(error);
@@ -51,12 +51,12 @@ passport.use(
     },
     async function (issuer, profile, cb) {
       try {
-        const user = await readUser(profile.id);
+        const user = await User.get(profile.id);
         if (user) {
           console.log(`User ${profile.id} logged in.`);
           return cb(null, user);
         } else {
-          const newUser = await createUser({ id: profile.id });
+          const newUser = await User.create({ id: profile.id });
           console.log(`New user ${profile.id} registered.`);
           return cb(null, newUser);
         }
