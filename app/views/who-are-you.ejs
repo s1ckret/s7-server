@@ -1,0 +1,16 @@
+<div class="flex flex-col items-center justify-center min-h-screen">
+  <h1 class="text-2xl font-bold mb-4">Who Are You?</h1>
+  <% if (typeof error !== 'undefined') { %>
+    <div class="text-red-500 mb-2"><%= error %></div>
+  <% } %>
+  <form method="POST" class="flex flex-col gap-2 w-64">
+    <label for="callsign" class="font-semibold">Callsign</label>
+    <input type="hidden" name="_csrf" value="<%= _csrfToken %>">
+    <input type="text" id="callsign" name="callsign" class="border rounded px-2 py-1" required />
+    <button type="submit" class="bg-blue-600 text-white rounded px-4 py-2 mt-2">Submit</button>
+  </form>
+  <form method="POST" action="/logout" class="mt-6">
+    <input type="hidden" name="_csrf" value="<%= _csrfToken %>">
+    <button type="submit" class="bg-gray-400 text-white rounded px-4 py-2">Sign out</button>
+  </form>
+</div>

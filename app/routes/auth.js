@@ -6,9 +6,15 @@ import { readUser, createUser } from '../services/users-service.js'
 
 const router = express.Router();
 
-
 router.get('/login', function (req, res, next) {
   res.render('login');
+});
+
+router.post('/logout', function (req, res, next) {
+  req.logout(function (err) {
+    if (err) { return next(err); }
+    res.redirect('/');
+  });
 });
 
 router.get('/login/federated/google', passport.authenticate('google'));
@@ -61,12 +67,5 @@ passport.use(
     }
   )
 );
-
-router.post('/logout', function (req, res, next) {
-  req.logout(function (err) {
-    if (err) { return next(err); }
-    res.redirect('/');
-  });
-});
 
 export default router;

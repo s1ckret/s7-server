@@ -18,9 +18,13 @@ const __dirname = dirname(__filename);
 import { DynamoDBStore } from '@pwrdrvr/dynamodb-session-store';
 import { ddbClient } from './services/dynamo.js';
 
+
 import indexRouter from './routes/index.js';
 import authRouter from './routes/auth.js';
 import usersRouter from './routes/users.js';
+import whoAreYouRouter from './routes/who-are-you.js';
+import waitForApproveRouter from './routes/wait-for-approve.js';
+import { requireAuth } from './middleware/requireAuth.js';
 
 var app = express();
 
@@ -80,18 +84,13 @@ app.use(function (req, res, next) {
   next()
 })
 
-const isAuthenticated = (req, res, next) => {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.status(401).json({
-    message: "Access denied. Please log in.",
-  });
-};
+app.use(requireAuth);
 
 app.use('/', indexRouter);
 app.use('/', authRouter);
-app.use('/users', isAuthenticated, usersRouter);
+app.use('/users', usersRouter);
+app.use('/who-are-you', whoAreYouRouter);
+app.use('/wait-for-approve', waitForApproveRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
