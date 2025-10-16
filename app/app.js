@@ -82,6 +82,7 @@ app.use(doubleCsrfProtection);
 app.use(function (req, res, next) {
   res.locals._csrfToken = req.csrfToken()
   res.locals.currentUser = req.user
+  res.locals.currentPath = req.path;
   next()
 })
 
