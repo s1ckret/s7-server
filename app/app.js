@@ -22,6 +22,7 @@ import { ddbClient } from './services/dynamo.js';
 import indexRouter from './routes/index.js';
 import authRouter from './routes/auth.js';
 import usersRouter from './routes/users.js';
+import profileRouter from './routes/profile.js';
 import whoAreYouRouter from './routes/who-are-you.js';
 import waitForApproveRouter from './routes/wait-for-approve.js';
 import adminRouter from './routes/admin.js';
@@ -87,13 +88,13 @@ app.use(function (req, res, next) {
 })
 
 app.use(requireAuth);
-
 app.use('/', indexRouter);
 app.use('/', authRouter);
-app.use('/users', usersRouter);
-app.use('/who-are-you', whoAreYouRouter);
-app.use('/wait-for-approve', waitForApproveRouter);
-app.use('/admin', function (req, res, next) {
+app.use('/', usersRouter);
+app.use('/', profileRouter);
+app.use('/', whoAreYouRouter);
+app.use('/', waitForApproveRouter);
+app.use('/', function (req, res, next) {
   if (req.user && req.user.admin) {
     next()
   } else {

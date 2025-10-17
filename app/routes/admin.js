@@ -2,7 +2,7 @@ import express from 'express';
 const router = express.Router();
 
 // GET admin panel
-router.get('/', (req, res) => {
+router.get('/admin', (req, res) => {
   // You may want to add admin check here
   res.render('admin', { title: 'Admin Panel' });
 });

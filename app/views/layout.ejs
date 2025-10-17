@@ -7,8 +7,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>
-    <% if (typeof title !=='undefined' ) { %>
-      <%= title %>
+    <% if (locals.title) { %>
+      <%= locals.title %>
     <% } else { %>
       Tracker
     <% } %>
@@ -18,30 +18,29 @@
 
 <body>
   <header class="fixed top-0 left-0 right-0 h-12 bg-white flex items-center justify-between px-4 shadow-md z-10">
-        <a href="/" class="text-xl font-bold">S7</a>
-        <% if (currentUser && currentUser.callsign && currentUser.approved) { %>
-          <div class="space-x-2">
-              <% if (currentUser.admin) { %>
-                <a href="/admin" class="text-red-500 font-medium <% if (currentPath === '/admin') { %>border-b-2 font-bold<% } %>">Адмін</a>
-              <% } %>
-              <a href="/profile">Привіт, <span class="underline <% if (currentPath === '/profile') { %>font-bold<% } %>"><%= currentUser.callsign %></span></a>
-          </div>
-        <% } %>
-    </header>
+      <a href="/" class="text-xl font-bold">S7</a>
+      <% if (locals.currentUser && locals.currentUser.callsign && locals.currentUser.approved) { %>
+        <div class="space-x-2">
+            <% if (locals.currentUser.admin) { %>
+              <a href="/admin" class="text-red-500 font-medium <% if (locals.currentPath === '/admin') { %>border-b-2 font-bold<% } %>">Адмін</a>
+            <% } %>
+            <a href="/profile">Привіт, <span class="underline <% if (locals.currentPath === '/profile') { %>font-bold<% } %>"><%= locals.currentUser.callsign %></span></a>
+        </div>
+      <% } %>
+  </header>
 
     <main class="h-[calc(100vh-3rem-3.5rem)] overflow-y-auto px-4 py-4 mt-12">
       <%- body %>
     </main>
 
-    <% if (currentUser && currentUser.callsign && currentUser.approved) { %>
+    <% if (locals.currentUser && locals.currentUser.callsign && locals.currentUser.approved) { %>
       <nav class="fixed bottom-0 left-0 right-0 h-14 bg-white border-t border-gray-300 flex justify-around items-center z-10">
-          <a href="/leaderboard" class="text-black p-2 <% if (currentPath === '/leaderboard') { %>border-b-2 font-bold<% } %>">Лідери</a>
-          <a href="/log" class="text-black p-2 <% if (currentPath === '/log') { %>border-b-2 font-bold<% } %>">Журнал</a>
-          <a href="/time" class="text-green-800 p-2 <% if (currentPath === '/time') { %>border-b-2 border-green-800 font-bold<% } %>">Час</a>
-          <a href="/exercises" class="text-black p-2 <% if (currentPath === '/exercises') { %>border-b-2 font-bold<% } %>">Вправи</a>
+          <a href="/leaderboard" class="text-black p-2 <% if (locals.currentPath === '/leaderboard') { %>border-b-2 font-bold<% } %>">Лідери</a>
+          <a href="/log" class="text-black p-2 <% if (locals.currentPath === '/log') { %>border-b-2 font-bold<% } %>">Журнал</a>
+          <a href="/time" class="text-green-800 p-2 <% if (locals.currentPath === '/time') { %>border-b-2 border-green-800 font-bold<% } %>">Час</a>
+          <a href="/exercises" class="text-black p-2 <% if (locals.currentPath === '/exercises') { %>border-b-2 font-bold<% } %>">Вправи</a>
       </nav>
     <% } %>
-
 </body>
 
 <%- script %>

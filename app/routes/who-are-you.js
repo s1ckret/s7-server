@@ -4,12 +4,12 @@ import { User } from '../services/users-service.js';
 const router = express.Router();
 
 // GET who-are-you page
-router.get('/', (req, res) => {
+router.get('/who-are-you', (req, res) => {
   res.render('who-are-you', { title: 'Who Are You' });
 });
 
 // POST who-are-you: save callsign to user and redirect home
-router.post('/', async (req, res, next) => {
+router.post('/who-are-you', async (req, res, next) => {
   try {
     const { callsign } = req.body;
     if (!callsign) {
