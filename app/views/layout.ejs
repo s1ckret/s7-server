@@ -29,20 +29,60 @@
       <% } %>
   </header>
 
-    <main class="h-[calc(100vh-3rem-3.5rem)] overflow-y-auto px-4 py-4 mt-12">
-      <%- body %>
-    </main>
-
-    <% if (locals.currentUser && locals.currentUser.callsign && locals.currentUser.approved) { %>
-      <nav class="fixed bottom-0 left-0 right-0 h-14 bg-white border-t border-gray-300 flex justify-around items-center z-10">
-          <a href="/leaderboard" class="text-black p-2 <% if (locals.currentPath === '/leaderboard') { %>border-b-2 font-bold<% } %>">Лідери</a>
-          <a href="/log" class="text-black p-2 <% if (locals.currentPath === '/log') { %>border-b-2 font-bold<% } %>">Журнал</a>
-          <a href="/time" class="text-green-800 p-2 <% if (locals.currentPath === '/time') { %>border-b-2 border-green-800 font-bold<% } %>">Час</a>
-          <a href="/exercises" class="text-black p-2 <% if (locals.currentPath === '/exercises') { %>border-b-2 font-bold<% } %>">Вправи</a>
-      </nav>
+  <% if (typeof success !=='undefined' && success) { %>
+    <div id="success-popup" class="fixed left-1/2 -translate-x-1/2 bottom-16 text-white px-1 py-1 text-center rounded shadow-lg bg-green-500 w-11/12">
+        <div class="flex items-center justify-items-start space-x-3">
+            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span><%= success %></span>
+        </div>
+    </div>
     <% } %>
+    <% if (typeof error !== 'undefined' && error) { %>
+    <div id="error-popup" class="fixed left-1/2 -translate-x-1/2 bottom-16 text-white px-1 py-1 text-center rounded shadow-lg bg-red-500 w-11/12">
+        <div class="flex items-center justify-items-start space-x-3">
+            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span><%= error %></span>
+        </div>
+    </div>
+  <% } %>
+
+  <main class="h-[calc(100vh-3rem-3.5rem)] overflow-y-auto px-4 py-4 mt-12">
+    <%- body %>
+  </main>
+
+  <% if (locals.currentUser && locals.currentUser.callsign && locals.currentUser.approved) { %>
+    <nav class="fixed bottom-0 left-0 right-0 h-14 bg-white border-t border-gray-300 flex justify-around items-center z-10">
+        <a href="/leaderboard" class="text-black p-2 <% if (locals.currentPath === '/leaderboard') { %>border-b-2 font-bold<% } %>">Лідери</a>
+        <a href="/log" class="text-black p-2 <% if (locals.currentPath === '/log') { %>border-b-2 font-bold<% } %>">Журнал</a>
+        <a href="/time" class="text-green-800 p-2 <% if (locals.currentPath === '/time') { %>border-b-2 border-green-800 font-bold<% } %>">Час</a>
+        <a href="/exercises" class="text-black p-2 <% if (locals.currentPath === '/exercises') { %>border-b-2 font-bold<% } %>">Вправи</a>
+    </nav>
+  <% } %>
 </body>
 
+
+<script>
+  window.addEventListener('DOMContentLoaded', function() {
+    var successPopup = document.getElementById('success-popup');
+    var errorPopup = document.getElementById('error-popup');
+    if (successPopup) {
+      setTimeout(function() {
+        successPopup.style.display = 'none';
+      }, 3000);
+      successPopup.onclick = function(e) {
+        successPopup.style.display = 'none';
+      };
+    }
+    if (errorPopup) {
+      setTimeout(function() {
+        errorPopup.style.display = 'none';
+      }, 5000);
+      errorPopup.onclick = function(e) {
+        errorPopup.style.display = 'none';
+      };
+    }
+  });
+</script>
 <%- script %>
 
 </html>
