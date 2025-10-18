@@ -11,6 +11,7 @@ export class User {
         this.joined_at = data.joined_at || new Date().toISOString();
         this.admin = data.admin || false;
         this.approved = data.approved || false;
+        this.banned = data.banned || false;
         this.total_ammo = data.total_ammo || 0;
         this.total_hit = data.total_hit || 0;
         this.total_drill_time_ms = data.total_drill_time_ms || 0;

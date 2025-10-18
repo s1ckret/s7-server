@@ -13,6 +13,10 @@ export function requireAuth(req, res, next) {
         if (req.user && req.user.callsign && req.user.approved === false && req.path !== '/wait-for-approve') {
             return res.redirect('/wait-for-approve');
         }
+        // If user is banned, redirect to /banned
+        if (req.user && req.user.banned === true && req.path !== '/banned') {
+            return res.redirect('/banned');
+        }
         return next();
     } else {
         const openPaths = ['/login', '/login/federated/google', '/oauth2/redirect/google'];
