@@ -9,16 +9,13 @@ import logger from 'morgan';
 import passport from 'passport';
 import 'dotenv/config'
 import methodOverride from 'method-override';
+import { ConnectSessionKnexStore } from "connect-session-knex";
 
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
-import { DynamoDBStore } from '@pwrdrvr/dynamodb-session-store';
-import { ddbClient } from './services/dynamo.js';
-
 
 import indexRouter from './routes/index.js';
 import authRouter from './routes/auth.js';
@@ -28,6 +25,7 @@ import whoAreYouRouter from './routes/who-are-you.js';
 import waitForApproveRouter from './routes/wait-for-approve.js';
 import adminRouter from './routes/admin.js';
 import { requireAuth } from './middleware/requireAuth.js';
+import { db } from './services/db.js';
 
 var app = express();
 
@@ -60,7 +58,7 @@ app.use(expressLayouts);
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(methodOverride(function(req, res){
+app.use(methodOverride(function (req, res) {
   if (req.body && typeof req.body === 'object' && '_method' in req.body) {
     // look in urlencoded POST bodies and delete it
     var method = req.body._method
@@ -69,13 +67,15 @@ app.use(methodOverride(function(req, res){
   }
 }))
 app.use(express.static(path.join(__dirname, 'public')));
+
+const store = new ConnectSessionKnexStore({
+  knex: db,
+  cleanupInterval: 0, // disable session cleanup
+});
+
 app.use(
   session({
-    store: new DynamoDBStore({
-      tableName: process.env.DYNAMODB_SESSION_TABLE_NAME,
-      ddbClient,
-      touchAfter: 60 * 60, // 60 minutes in seconds
-    }),
+    store: store,
     secret: process.env.SESSION_SECRET,
     cookie: {
       maxAge: 14 * 24 * 60 * 60 * 1000, // 14 days in milliseconds

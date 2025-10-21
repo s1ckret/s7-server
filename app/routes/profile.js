@@ -17,6 +17,8 @@ router.patch('/profile', async (req, res) => {
   try {
     const updatedUser = await User.update(userId, { callsign, joined_at });
     const success = 'Профіль успішно оновлено.';
+    res.locals.currentUser = updatedUser;
+
     res.render('profile', {
       title: 'Profile',
       user: updatedUser,

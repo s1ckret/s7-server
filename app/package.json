@@ -6,15 +6,12 @@
     "start": "node ./bin/www",
     "dev": "nodemon ./bin/www",
     "build:style": "postcss public/stylesheets/tailwind.css -o public/stylesheets/build.css",
-    "watch:style": "postcss public/stylesheets/tailwind.css -o public/stylesheets/build.css --watch"
+    "watch:style": "postcss public/stylesheets/tailwind.css -o public/stylesheets/build.css --watch",
+    "knex": "knex"
   },
   "type": "module",
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.902.0",
-    "@aws-sdk/lib-dynamodb": "^3.902.0",
-    "@codegenie/serverless-express": "^4.17.0",
-    "@pwrdrvr/dynamodb-session-store": "^1.1.0",
-    "connect-dynamodb": "^3.0.5",
+    "connect-session-knex": "^5.0.0",
     "cookie-parser": "~1.4.4",
     "csrf-csrf": "^4.0.3",
     "debug": "~2.6.9",
@@ -24,10 +21,12 @@
     "express-ejs-layouts": "^2.5.1",
     "express-session": "^1.18.2",
     "http-errors": "~1.6.3",
+    "knex": "^3.1.0",
     "method-override": "^3.0.0",
     "morgan": "~1.9.1",
     "passport": "^0.7.0",
-    "passport-google-oidc": "^0.1.0"
+    "passport-google-oidc": "^0.1.0",
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.13",

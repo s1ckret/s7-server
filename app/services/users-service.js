@@ -1,13 +1,11 @@
-// User model for DynamoDB users table
-import { ddbDocumentClient } from "./dynamo.js";
-import { GetCommand, PutCommand, UpdateCommand, DeleteCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
+import { db } from "./db.js";
 
-const TABLE_NAME = process.env.DYNAMODB_USERS_TABLE_NAME;
+const TABLE_NAME = "users";
 
 export class User {
     constructor(data) {
         this.id = data.id;
-        this.callsign = data.callsign || "";
+        this.callsign = data.callsign || null;
         this.joined_at = data.joined_at || new Date().toISOString();
         this.admin = data.admin || false;
         this.approved = data.approved || false;
@@ -19,16 +17,11 @@ export class User {
 
     static async create(userData) {
         const user = new User(userData);
-        const params = {
-            TableName: TABLE_NAME,
-            Item: { ...user },
-            ConditionExpression: "attribute_not_exists(id)",
-        };
         try {
-            await ddbDocumentClient.send(new PutCommand(params));
+            await db(TABLE_NAME).insert({ ...user });
             return user;
         } catch (error) {
-            if (error.name === "ConditionalCheckFailedException") {
+            if (error.code === 'SQLITE_CONSTRAINT') {
                 throw new Error(`User with ID ${user.id} already exists.`);
             }
             throw error;
@@ -36,81 +29,42 @@ export class User {
     }
 
     static async get(userId) {
-        const params = {
-            TableName: TABLE_NAME,
-            Key: { id: userId },
-        };
         try {
-            const { Item } = await ddbDocumentClient.send(new GetCommand(params));
-            return Item ? new User(Item) : null;
+            const row = await db(TABLE_NAME).where({ id: userId }).first();
+            return row ? new User(row) : null;
         } catch (error) {
             throw error;
         }
     }
 
     static async update(userId, userData) {
-        const updateExpressions = [];
-        const expressionAttributeValues = {};
-        const expressionAttributeNames = {};
-        let valueCounter = 0;
-        for (const [key, value] of Object.entries(userData)) {
-            if (value !== undefined) {
-                const nameKey = `#n${valueCounter}`;
-                const valueKey = `:v${valueCounter}`;
-                updateExpressions.push(`${nameKey} = ${valueKey}`);
-                expressionAttributeNames[nameKey] = key;
-                expressionAttributeValues[valueKey] = value;
-                valueCounter++;
-            }
-        }
-        if (updateExpressions.length === 0) {
+        if (!userData || Object.keys(userData).length === 0) {
             throw new Error("No update parameters provided.");
         }
-        const params = {
-            TableName: TABLE_NAME,
-            Key: { id: userId },
-            UpdateExpression: "SET " + updateExpressions.join(", "),
-            ExpressionAttributeNames: expressionAttributeNames,
-            ExpressionAttributeValues: expressionAttributeValues,
-            ReturnValues: "ALL_NEW"
-        };
         try {
-            const { Attributes } = await ddbDocumentClient.send(new UpdateCommand(params));
-            return new User(Attributes);
+            await db(TABLE_NAME).where({ id: userId }).update(userData);
+            const updated = await db(TABLE_NAME).where({ id: userId }).first();
+            return updated ? new User(updated) : null;
         } catch (error) {
             throw error;
         }
     }
 
     static async listUnapproved() {
-        const params = {
-            TableName: TABLE_NAME,
-            FilterExpression: "approved = :approved AND attribute_exists(callsign) AND callsign <> :empty",
-            ExpressionAttributeValues: {
-                ":approved": false,
-                ":empty": ""
-            }
-        };
         try {
-            const { Items } = await ddbDocumentClient.send(new ScanCommand(params));
-            return Items ? Items.map(item => new User(item)) : [];
+            const rows = await db(TABLE_NAME)
+                .where({ approved: false })
+                .whereNotNull('callsign');
+            return rows.map(row => new User(row));
         } catch (error) {
             throw error;
         }
     }
 
     static async delete(userId) {
-        const params = {
-            TableName: TABLE_NAME,
-            Key: { id: userId },
-            ConditionExpression: "attribute_exists(id)",
-        };
         try {
-            await ddbDocumentClient.send(new DeleteCommand(params));
+            await db(TABLE_NAME).where({ id: userId }).del();
         } catch (error) {
-            if (error.name === "ConditionalCheckFailedException") {
-                return; // Already deleted or not found
-            }
             throw error;
         }
     }
