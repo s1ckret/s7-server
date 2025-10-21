@@ -26,6 +26,7 @@ import waitForApproveRouter from './routes/wait-for-approve.js';
 import adminRouter from './routes/admin.js';
 import { requireAuth } from './middleware/requireAuth.js';
 import { db } from './services/db.js';
+import drillRouter from './routes/drills.js';
 
 var app = express();
 
@@ -103,6 +104,7 @@ app.use('/', usersRouter);
 app.use('/', profileRouter);
 app.use('/', whoAreYouRouter);
 app.use('/', waitForApproveRouter);
+app.use('/', drillRouter);
 app.use('/', function (req, res, next) {
   if (req.user && req.user.admin) {
     next()

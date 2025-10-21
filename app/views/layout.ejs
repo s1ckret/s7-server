@@ -46,7 +46,7 @@
     </div>
   <% } %>
 
-  <main class="h-[calc(100vh-3rem-3.5rem)] overflow-y-auto px-4 py-4 mt-12">
+  <main class="h-[calc(100vh-3rem-3.5rem)] overflow-y-auto px-8 py-4 mt-12">
     <%- body %>
   </main>
 
@@ -54,8 +54,8 @@
     <nav class="fixed bottom-0 left-0 right-0 h-14 bg-white border-t border-gray-300 flex justify-around items-center z-10">
         <a href="/leaderboard" class="text-black p-2 <% if (locals.currentPath === '/leaderboard') { %>border-b-2 font-bold<% } %>">Лідери</a>
         <a href="/log" class="text-black p-2 <% if (locals.currentPath === '/log') { %>border-b-2 font-bold<% } %>">Журнал</a>
-        <a href="/time" class="text-green-800 p-2 <% if (locals.currentPath === '/time') { %>border-b-2 border-green-800 font-bold<% } %>">Час</a>
-        <a href="/exercises" class="text-black p-2 <% if (locals.currentPath === '/exercises') { %>border-b-2 font-bold<% } %>">Вправи</a>
+        <a href="/time" class="text-[#06402B] p-2 <% if (locals.currentPath === '/time') { %>border-b-2 border-green-800 font-bold<% } %>">Час</a>
+        <a href="/drills" class="text-black p-2 <% if (locals.currentPath === '/exercises') { %>border-b-2 font-bold<% } %>">Вправи</a>
     </nav>
   <% } %>
 </body>

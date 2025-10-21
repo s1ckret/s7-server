@@ -1,0 +1,16 @@
+<div class="h-full flex flex-col justify-center items-center">
+  <h1 class="text-xl font-bold mb-4">Create Drill</h1>
+  <form method="POST" class="w-full flex flex-col">
+    <input type="hidden" name="_csrf" value="<%= _csrfToken %>">
+    <label class="font-semibold" for="name">Name</label>
+    <input id="name" name="name" type="text" class="border rounded px-2 mt-1" required />
+
+    <label class="font-semibold mt-3" for="description">Description</label>
+    <textarea id="description" name="description" class="border rounded px-2 mt-1" rows="3"></textarea>
+
+    <label class="font-semibold mt-3" for="ammo">Ammo</label>
+    <input id="ammo" name="ammo" type="number" step="1" min="0" class="border rounded px-2 mt-1" required />
+
+    <button type="submit" class="bg-blue-600 text-white rounded px-4 py-2 mt-2">Create</button>
+  </form>
+</div>

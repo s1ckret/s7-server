@@ -2,3 +2,4 @@
 **/public/stylesheets/build.css
 **/.DS_Store
 **/.env
+**/*.sqlite*
