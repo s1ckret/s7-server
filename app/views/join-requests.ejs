@@ -1,0 +1,23 @@
+<div class="flex flex-col items-center justify-center">
+  <h1 class="text-2xl font-bold mb-4">Запити на приєднання</h1>
+  <form method="POST" action="/admin/join-requests" class="flex flex-col gap-2">
+    <input type="hidden" name="_csrf" value="<%= _csrfToken %>">
+    <ul class="mb-4">
+      <% if (users && users.length > 0) { %>
+        <% users.forEach(function(user) { %>
+          <li class="flex items-center gap-2 mb-2">
+            <input type="checkbox" name="userIds" value="<%= user.id %>" id="user-<%= user.id %>" />
+            <label for="user-<%= user.id %>" class="font-semibold"><%= user.callsign || user.id %></label>
+            <span class="text-xs text-gray-500">(<%= user.joined_at %>)</span>
+          </li>
+        <% }); %>
+      <% } else { %>
+        <li class="text-gray-500">Немає запитів на приєднання</li>
+      <% } %>
+    </ul>
+    <% if (users && users.length > 0) { %>
+      <button type="submit" class="bg-green-600 text-white rounded px-4 py-2">Схвалити</button>
+    <% } %>
+  </form>
+  <a href="/admin" class="mt-4 bg-gray-300 text-gray-800 rounded px-4 py-2">Назад</a>
+</div>

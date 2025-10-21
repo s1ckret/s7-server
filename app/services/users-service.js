@@ -1,13 +1,13 @@
 // User model for DynamoDB users table
 import { ddbDocumentClient } from "./dynamo.js";
-import { GetCommand, PutCommand, UpdateCommand, DeleteCommand } from "@aws-sdk/lib-dynamodb";
+import { GetCommand, PutCommand, UpdateCommand, DeleteCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
 
 const TABLE_NAME = process.env.DYNAMODB_USERS_TABLE_NAME;
 
 export class User {
     constructor(data) {
         this.id = data.id;
-        this.callsign = data.callsign || null;
+        this.callsign = data.callsign || "";
         this.joined_at = data.joined_at || new Date().toISOString();
         this.admin = data.admin || false;
         this.approved = data.approved || false;
@@ -77,6 +77,23 @@ export class User {
         try {
             const { Attributes } = await ddbDocumentClient.send(new UpdateCommand(params));
             return new User(Attributes);
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    static async listUnapproved() {
+        const params = {
+            TableName: TABLE_NAME,
+            FilterExpression: "approved = :approved AND attribute_exists(callsign) AND callsign <> :empty",
+            ExpressionAttributeValues: {
+                ":approved": false,
+                ":empty": ""
+            }
+        };
+        try {
+            const { Items } = await ddbDocumentClient.send(new ScanCommand(params));
+            return Items ? Items.map(item => new User(item)) : [];
         } catch (error) {
             throw error;
         }
