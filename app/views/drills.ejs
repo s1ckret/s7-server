@@ -1,8 +1,8 @@
 <div class="h-full">
   <div class="flex justify-center items-center mb-4">
-    <h1 class="text-xl font-bold text-center">Drills</h1>
+    <h1 class="text-xl font-bold text-center">Вправи</h1>
     <% if (locals.currentUser && locals.currentUser.admin) { %>
-      <a href="/drills/create" class="bg-blue-600 text-white rounded px-4 py-2 ml-2 whitespace-nowrap font-semibold text-sm">Create</a>
+      <a href="/drills/create" class="bg-blue-600 text-white rounded px-4 py-2 ml-2 whitespace-nowrap font-semibold text-sm">Додати</a>
     <% } %>
   </div>
   <ul class="space-y-3 pb-4">
@@ -30,6 +30,7 @@
                 <span
                   id="name-<%= drill.id %>"
                   class="font-semibold line-clamp-2 cursor-pointer"
+                  title="Натисніть, щоб розгорнути/згорнути назву"
                   onclick="const nameEl = document.getElementById('name-<%= drill.id %>'); nameEl.classList.toggle('line-clamp-2');"
                 ><%= drill.name %></span>
               </div>
@@ -37,11 +38,12 @@
                 <span
                   id="desc-<%= drill.id %>"
                   class="text-gray-500 text-sm line-clamp-2 cursor-pointer"
+                  title="Натисніть, щоб розгорнути/згорнути опис"
                   onclick="const descEl = document.getElementById('desc-<%= drill.id %>'); descEl.classList.toggle('line-clamp-2');"
                 ><%= drill.description %></span>
               <% } %>
             </div>
-            <a href="/time?drillId=<%= drill.id %>" class="ml-auto" title="Time this drill">
+            <a href="/time?drillId=<%= drill.id %>" class="ml-auto" title="Засікти час цієї вправи">
               <svg xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" viewBox="0 0 24 24" fill="none">
                 <path d="M12 14V11M12 6C7.85786 6 4.5 9.35786 4.5 13.5C4.5 17.6421 7.85786 21 12 21C16.1421 21 19.5 17.6421 19.5 13.5C19.5 11.5561 18.7605 9.78494 17.5474 8.4525M12 6C14.1982 6 16.1756 6.94572 17.5474 8.4525M12 6V3M19.5 6.5L17.5474 8.4525M12 3H9M12 3H15" stroke="#06402B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
@@ -49,18 +51,18 @@
           </div>
           <div class="flex items-start space-x-2 mt-2">
             <% if (locals.currentUser && locals.currentUser.admin) { %>
-              <form method="POST" action="/drills/<%= drill.id %>" onsubmit="return confirm('Delete \'<%= drill.name %>\'?');">
+              <form method="POST" action="/drills/<%= drill.id %>" onsubmit="return confirm('Видалити «<%= drill.name %>»?');">
                 <input type="hidden" name="_csrf" value="<%= locals._csrfToken %>">
                 <input type="hidden" name="_method" value="DELETE">
-                <button type="submit" class="bg-red-600 hover:bg-red-700 text-white rounded px-3 py-1 text-xs font-semibold">Delete</button>
+                <button type="submit" class="bg-red-600 hover:bg-red-700 text-white rounded px-3 py-1 text-xs font-semibold">Видалити</button>
               </form>
-              <a href="/drills/<%= drill.id %>/edit" class="bg-yellow-500 hover:bg-yellow-600 text-white rounded px-3 py-1 text-xs font-semibold">Edit</a>
+              <a href="/drills/<%= drill.id %>/edit" class="bg-yellow-500 hover:bg-yellow-600 text-white rounded px-3 py-1 text-xs font-semibold">Змінити</a>
             <% } %>
           </div>
         </li>
       <% }) %>
     <% } else { %>
-      <li class="text-center text-gray-400">No drills found.</li>
+      <li class="text-center text-gray-400">Вправ не знайдено.</li>
     <% } %>
   </ul>
 </div>

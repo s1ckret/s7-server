@@ -15,7 +15,7 @@ router.get("/drills", async (req, res) => {
         }
         res.render("drills", { drills, success });
     } catch (error) {
-        res.status(500).send("Failed to load drills");
+        res.status(500).send("Помилка завантаження вправ.");
     }
 });
 
@@ -36,11 +36,67 @@ router.post("/drills/create", async (req, res) => {
     try {
         await Drill.create({ name, description, ammo: parseFloat(ammo) });
         if (req.session) {
-            req.session.success = 'Drill created successfully.';
+            req.session.success = 'Вправу додано.';
         }
         res.redirect("/drills");
     } catch (error) {
         res.render("drills-create", { error: error.message });
+    }
+});
+
+// GET /drills/:id/edit - show edit form (admin only)
+router.get("/drills/:id/edit", async (req, res) => {
+    if (!req.user || !req.user.admin) {
+        return res.status(403).send("Forbidden");
+    }
+    try {
+        const drill = await Drill.get(req.params.id);
+        if (!drill) return res.status(404).send("Вправу не знайдено.");
+        res.render("drills-edit", { drill });
+    } catch (error) {
+        res.status(500).send("Помилка.");
+    }
+});
+
+// PUT /drills/:id - update drill (admin only)
+router.put("/drills/:id", async (req, res) => {
+    if (!req.user || !req.user.admin) {
+        return res.status(403).send("Forbidden");
+    }
+    const { name, description, ammo } = req.body;
+    try {
+        await Drill.update(req.params.id, {
+            name,
+            description,
+            ammo: parseInt(ammo)
+        });
+        if (req.session) {
+            req.session.success = 'Вправу оновлено.';
+        }
+        res.redirect("/drills");
+    } catch (error) {
+        // reload form with error
+        const drill = await Drill.get(req.params.id);
+        res.render("drills-edit", { drill, error: error.message });
+    }
+});
+
+// DELETE /drills/:id - delete drill (admin only)
+router.delete("/drills/:id", async (req, res) => {
+    if (!req.user || !req.user.admin) {
+        return res.status(403).send("Forbidden");
+    }
+    try {
+        await Drill.delete(req.params.id);
+        if (req.session) {
+            req.session.success = 'Вправу видалено.';
+        }
+        res.redirect("/drills");
+    } catch (error) {
+        if (req.session) {
+            req.session.success = 'Помилка видалення.';
+        }
+        res.redirect("/drills");
     }
 });
 

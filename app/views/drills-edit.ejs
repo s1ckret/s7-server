@@ -1,0 +1,19 @@
+<form action="/drills/<%= drill.id %>" method="post">
+    <input type="hidden" name="_csrf" value="<%= locals._csrfToken %>">
+    <input type="hidden" name="_method" value="PUT">
+    <h1 class="text-xl font-bold mb-4">Змінити вправу</h1>
+    <div class="mb-4">
+        <label class="block text-sm font-medium mb-1" for="name">Назва</label>
+        <input class="w-full px-3 py-1 rounded border" type="text" id="name" name="name" value="<%= drill.name %>" required>
+    </div>
+    <div class="mb-4">
+        <label class="block text-sm font-medium mb-1" for="description">Опис</label>
+        <textarea class="w-full px-3 py-1 rounded border" id="description" name="description" rows="5"><%= drill.description || '' %></textarea>
+    </div>
+    <div class="mb-4">
+        <label class="block text-sm font-medium mb-1" for="ammo">Патронів на вправу</label>
+        <input class="w-full px-3 py-1 rounded border" type="number" step="0.01" id="ammo" name="ammo" value="<%= drill.ammo %>" required>
+    </div>
+    <button class="bg-blue-500 text-white px-4 py-2 mt-4 rounded w-full" type="submit">Оновити</button>
+</form>
+<a href="/drills" class="block text-center text-gray-500 mt-4">Назад до списку</a>
