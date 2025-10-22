@@ -55,6 +55,39 @@ router.post('/admin/users/ban', async (req, res) => {
   }
 });
 
+// GET promote/demote admin rights page
+router.get('/admin/users/admin', async (req, res) => {
+  try {
+    // Fetch admin and non-admin users (approved only, with callsign)
+    const adminUsers = await User.list({ admin: true, approved: true });
+    const nonAdminUsers = await User.list({ admin: false, approved: true });
+    res.render('admin-promote', {
+      adminUsers,
+      nonAdminUsers,
+      title: 'Адмін права'
+    });
+  } catch (error) {
+    res.status(500).send('Error fetching admin/non-admin users');
+  }
+});
+
+// POST promote/demote admin rights
+router.post('/admin/users/admin', async (req, res) => {
+  try {
+    let promoteIds = req.body.promoteIds || [];
+    let demoteIds = req.body.demoteIds || [];
+    if (!Array.isArray(promoteIds)) promoteIds = [promoteIds];
+    if (!Array.isArray(demoteIds)) demoteIds = [demoteIds];
+    // Promote selected users
+    await Promise.all(promoteIds.map(id => User.update(id, { admin: true })));
+    // Demote selected users
+    await Promise.all(demoteIds.map(id => User.update(id, { admin: false })));
+    res.redirect('/admin/users/admin');
+  } catch (error) {
+    res.status(500).send('Error updating admin rights');
+  }
+});
+
 // POST approve join requests
 router.post('/admin/join-requests', async (req, res) => {
   try {
