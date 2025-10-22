@@ -47,10 +47,24 @@ export class Drill {
         }
     }
 
-    static async list() {
+    /**
+     * List drills with pagination
+     * @param {Object} options { limit, offset }
+     * @returns {Promise<{drills: Drill[], total: number}>}
+     */
+    static async list(options = {}) {
+        let { limit = 0, offset = 0 } = options;
         try {
-            const rows = await db(TABLE_NAME).select();
-            return rows.map(row => new Drill(row));
+            let query = db(TABLE_NAME).select();
+            if (limit > 0) {
+                query = query.limit(limit).offset(offset);
+            }
+            const rows = await query;
+            const [{ count }] = await db(TABLE_NAME).count({ count: '*' });
+            return {
+                drills: rows.map(row => new Drill(row)),
+                total: typeof count === 'string' ? parseInt(count) : count
+            };
         } catch (error) {
             throw error;
         }

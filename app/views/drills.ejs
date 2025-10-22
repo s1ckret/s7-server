@@ -5,7 +5,7 @@
       <a href="/drills/create" class="bg-blue-600 text-white rounded px-4 py-2 ml-2 whitespace-nowrap font-semibold text-sm">Додати</a>
     <% } %>
   </div>
-  <ul class="space-y-3 pb-4">
+  <ul class="space-y-3">
     <% if (drills && drills.length) { %>
       <% drills.forEach(drill => { %>
         <li class="bg-white rounded-lg shadow p-4">
@@ -65,4 +65,38 @@
       <li class="text-center text-gray-400">Вправ не знайдено.</li>
     <% } %>
   </ul>
+
+  <% if (pagination && pagination.totalPages > 1) { %>
+    <div class="flex justify-center mt-6 pb-6 space-x-2">
+      <%
+        // Pagination window logic
+        const maxPagesToShow = 3;
+        let startPage = Math.max(1, pagination.page - Math.floor(maxPagesToShow / 2));
+        let endPage = startPage + maxPagesToShow - 1;
+        if (endPage > pagination.totalPages) {
+          endPage = pagination.totalPages;
+          startPage = Math.max(1, endPage - maxPagesToShow + 1);
+        }
+      %>
+      <% if (startPage > 1) { %>
+        <a href="/drills?page=1&limit=<%= pagination.limit %>" class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300">1</a>
+        <% if (startPage > 2) { %>
+          <span>...</span>
+        <% } %>
+      <% } %>
+      <% for (let p = startPage; p <= endPage; p++) { %>
+        <% if (p === pagination.page) { %>
+          <span class="px-3 py-1 rounded bg-blue-600 text-white font-bold"><%= p %></span>
+        <% } else { %>
+          <a href="/drills?page=<%= p %>&limit=<%= pagination.limit %>" class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300"><%= p %></a>
+        <% } %>
+      <% } %>
+      <% if (endPage < pagination.totalPages) { %>
+        <% if (endPage < pagination.totalPages - 1) { %>
+          <span>...</span>
+        <% } %>
+        <a href="/drills?page=<%= pagination.totalPages %>&limit=<%= pagination.limit %>" class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300"><%= pagination.totalPages %></a>
+      <% } %>
+    </div>
+  <% } %>
 </div>

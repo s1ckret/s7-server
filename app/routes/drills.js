@@ -5,15 +5,32 @@ const router = express.Router();
 
 
 // GET /drills - list all drills
+// GET /drills - list all drills with pagination
 router.get("/drills", async (req, res) => {
+    // Parse pagination params
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.max(1, Math.min(20, parseInt(req.query.limit) || 5));
+    const offset = (page - 1) * limit;
     try {
-        const drills = await Drill.list();
+        const { drills, total } = await Drill.list({ limit, offset });
         let success;
         if (req.session && req.session.success) {
             success = req.session.success;
             delete req.session.success;
         }
-        res.render("drills", { drills, success });
+        const totalPages = Math.ceil(total / limit);
+        res.render("drills", {
+            drills,
+            success,
+            pagination: {
+                page,
+                limit,
+                total,
+                totalPages,
+                hasPrev: page > 1,
+                hasNext: page < totalPages
+            }
+        });
     } catch (error) {
         res.status(500).send("Помилка завантаження вправ.");
     }
