@@ -1,0 +1,43 @@
+<div class="flex flex-col items-center justify-center">
+  <h1 class="text-2xl font-bold mb-4">Бан користувачів</h1>
+  <form method="POST" action="/admin/users/ban" class="flex flex-col gap-4 w-full max-w-md">
+    <input type="hidden" name="_csrf" value="<%= _csrfToken %>">
+    <div>
+      <h2 class="text-lg font-semibold mb-2 text-red-600">Забанені користувачі</h2>
+      <ul class="mb-4">
+        <% if (bannedUsers && bannedUsers.length > 0) { %>
+          <% bannedUsers.forEach(function(user) { %>
+            <li class="flex items-center gap-2 mb-2">
+              <input type="checkbox" name="unbanIds" value="<%= user.id %>" id="unban-<%= user.id %>" />
+              <label for="unban-<%= user.id %>" class="font-semibold"><%= user.callsign || user.id %></label>
+              <span class="text-xs text-gray-500">(<%= user.joined_at ? new Date(user.joined_at).toLocaleString('uk-UA', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '' %>)</span>
+            </li>
+          <% }); %>
+        <% } else { %>
+          <li class="text-gray-500">Немає забанених користувачів</li>
+        <% } %>
+      </ul>
+    </div>
+    <div>
+      <h2 class="text-lg font-semibold mb-2 text-green-700">Незабанені користувачі</h2>
+      <ul class="mb-4">
+        <% if (unbannedUsers && unbannedUsers.length > 0) { %>
+          <% unbannedUsers.forEach(function(user) { %>
+            <li class="flex items-center gap-2 mb-2">
+              <input type="checkbox" name="banIds" value="<%= user.id %>" id="ban-<%= user.id %>" <%= currentUser && user.id === currentUser.id ? 'disabled' : '' %> />
+              <label for="ban-<%= user.id %>" class="font-semibold"><%= user.callsign || user.id %></label>
+              <span class="text-xs text-gray-500">(<%= user.joined_at ? new Date(user.joined_at).toLocaleString('uk-UA', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '' %>)</span>
+            </li>
+          <% }); %>
+        <% } else { %>
+          <li class="text-gray-500">Немає користувачів для бана</li>
+        <% } %>
+      </ul>
+    </div>
+    <div class="flex gap-2">
+      <button type="submit" class="bg-green-600 text-white rounded px-4 py-2 disabled:opacity-50" name="action" value="unban" <%= !(bannedUsers && bannedUsers.length > 0) ? 'disabled' : '' %>>Розблокувати</button>
+      <button type="submit" class="bg-red-600 text-white rounded px-4 py-2 disabled:opacity-50" name="action" value="ban" <%= !(unbannedUsers && unbannedUsers.length > 0) ? 'disabled' : '' %>>Забанити</button>
+    </div>
+  </form>
+  <a href="/admin" class="mt-4 bg-gray-300 text-gray-800 rounded px-4 py-2">Назад</a>
+</div>

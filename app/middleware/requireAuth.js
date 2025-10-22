@@ -10,11 +10,12 @@ export function requireAuth(req, res, next) {
             return res.redirect('/who-are-you');
         }
         // If user has callsign but not approved, redirect to /wait-for-approve
-        if (req.user && req.user.callsign && req.user.approved === false && req.path !== '/wait-for-approve') {
+        if (req.user && req.user.callsign && Boolean(req.user.approved) === false && req.path !== '/wait-for-approve') {
             return res.redirect('/wait-for-approve');
         }
         // If user is banned, redirect to /banned
-        if (req.user && req.user.banned === true && req.path !== '/banned') {
+        console.log('requireAuth check banned:', Boolean(req.user.banned), req.path);
+        if (req.user && Boolean(req.user.banned) === true && req.path !== '/banned') {
             return res.redirect('/banned');
         }
         return next();

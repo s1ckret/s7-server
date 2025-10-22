@@ -15,6 +15,17 @@ export class User {
         this.total_drill_time_ms = data.total_drill_time_ms || 0;
     }
 
+
+    // List users by filter (for admin ban/unban page)
+    static async list(filter = {}) {
+        try {
+            const rows = await db(TABLE_NAME).where(filter).whereNotNull('callsign');
+            return rows.map(row => new User(row));
+        } catch (error) {
+            throw error;
+        }
+    }
+
     static async create(userData) {
         const user = new User(userData);
         try {

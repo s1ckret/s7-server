@@ -22,6 +22,39 @@ router.get('/admin/join-requests', async (req, res) => {
   }
 });
 
+// GET ban management page
+router.get('/admin/users/ban', async (req, res) => {
+  try {
+    // Fetch banned and unbanned users (approved only, with callsign)
+    const bannedUsers = await User.list({ banned: true, approved: true });
+    const unbannedUsers = await User.list({ banned: false, approved: true });
+    res.render('admin-ban', {
+      bannedUsers,
+      unbannedUsers,
+      title: 'Бан користувачів'
+    });
+  } catch (error) {
+    res.status(500).send('Error fetching banned/unbanned users');
+  }
+});
+
+// POST ban/unban users
+router.post('/admin/users/ban', async (req, res) => {
+  try {
+    let banIds = req.body.banIds || [];
+    let unbanIds = req.body.unbanIds || [];
+    if (!Array.isArray(banIds)) banIds = [banIds];
+    if (!Array.isArray(unbanIds)) unbanIds = [unbanIds];
+    // Ban selected users
+    await Promise.all(banIds.map(id => User.update(id, { banned: true })));
+    // Unban selected users
+    await Promise.all(unbanIds.map(id => User.update(id, { banned: false })));
+    res.redirect('/admin/users/ban');
+  } catch (error) {
+    res.status(500).send('Error updating ban status');
+  }
+});
+
 // POST approve join requests
 router.post('/admin/join-requests', async (req, res) => {
   try {
