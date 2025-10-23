@@ -30,6 +30,14 @@ import { db } from './services/db.js';
 import drillRouter from './routes/drills.js';
 
 var app = express();
+app.enable("trust proxy");
+app.use(function (req, res, next) {
+  // If CloudFront header is present, set X-Forwarded-Proto
+  if (req.headers['cloudfront-forwarded-proto']) {
+    req.headers['x-forwarded-proto'] = req.headers['cloudfront-forwarded-proto'];
+  }
+  next();
+})
 
 const {
   doubleCsrfProtection,
