@@ -25,9 +25,11 @@ import whoAreYouRouter from './routes/who-are-you.js';
 import waitForApproveRouter from './routes/wait-for-approve.js';
 import bannedRouter from './routes/banned.js';
 import adminRouter from './routes/admin.js';
+
 import { requireAuth } from './middleware/requireAuth.js';
 import { db } from './services/db.js';
 import drillRouter from './routes/drills.js';
+import timeRouter from './routes/time.js';
 
 var app = express();
 app.enable("trust proxy");
@@ -115,6 +117,7 @@ app.use('/', whoAreYouRouter);
 app.use('/', waitForApproveRouter);
 app.use('/', bannedRouter);
 app.use('/', drillRouter);
+app.use('/', timeRouter);
 app.use('/', function (req, res, next) {
   if (req.user && req.user.admin) {
     next()

@@ -25,8 +25,8 @@ export async function up(knex) {
 		table.float('ammo').notNullable();
 	});
 
-	// Submissions table
-	await knex.schema.createTable('submissions', (table) => {
+	// Records table
+	await knex.schema.createTable('records', (table) => {
 		table.increments('id').primary();
 		table.string('user_id').notNullable();
 		table.integer('drill_id').notNullable();
@@ -45,7 +45,7 @@ export async function up(knex) {
  */
 
 export async function down(knex) {
-	await knex.schema.dropTableIfExists('submissions');
+	await knex.schema.dropTableIfExists('records');
 	await knex.schema.dropTableIfExists('drills');
 	await knex.schema.dropTableIfExists('users');
 }

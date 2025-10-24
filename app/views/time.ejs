@@ -1,0 +1,168 @@
+
+<form method="POST" class="max-w-md mx-auto">
+	<input type="hidden" name="_csrf" value="<%= _csrfToken %>">
+    <h1 class="text-xl font-bold text-center mb-4">Час</h1>
+	<div class="mb-4">
+		<label class="block text-sm font-medium mb-1" for="drill">Вправа</label>
+		<select class="w-full px-3 py-1 rounded border" id="drill" name="drill" required>
+			<% if (drills && drills.length) { %>
+				<% drills.forEach(drill => { %>
+					<option value="<%= drill.id %>" <%= (typeof selectedDrill !== 'undefined' && String(selectedDrill) === String(drill.id)) ? 'selected' : '' %>><%= drill.name %></option>
+				<% }) %>
+			<% } else { %>
+				<option disabled selected>Немає вправ</option>
+			<% } %>
+		</select>
+	</div>
+	<div class="mb-4">
+		<label class="block text-sm font-medium mb-1" for="user">Стрілець</label>
+		<select class="w-full px-3 py-1 rounded border" id="user" name="user" required>
+			<% if (users && users.length) { %>
+				<% users.forEach(user => { %>
+					<option value="<%= user.id %>" <%= (typeof selectedUser !== 'undefined' && String(selectedUser) === String(user.id)) ? 'selected' : '' %>><%= user.callsign %></option>
+				<% }) %>
+			<% } else { %>
+				<option disabled selected>Немає користувачів</option>
+			<% } %>
+		</select>
+	</div>
+	<div class="mb-4">
+		<label class="block text-sm font-medium mb-1">Секундомір</label>
+		<div class="flex space-x-2 justify-center items-center mb-2">
+			<input id="minutes" type="number" min="0" max="59" maxlength="2" value="0" class="w-24 px-4 py-2 rounded border text-center text-4xl" placeholder="Хв" required />
+			<span class="self-center text-4xl font-bold">:</span>
+			<input id="seconds" type="number" min="0" max="59" maxlength="2" value="0" class="w-24 px-4 py-2 rounded border text-center text-4xl" placeholder="Сек" required />
+			<span class="self-center text-4xl font-bold">.</span>
+			<input id="milliseconds" type="number" min="0" max="999" maxlength="3" value="0" class="w-28 px-4 py-2 rounded border text-center text-4xl" placeholder="мс" required />
+		</div>
+		<div class="flex w-full">
+            <button type="button" id="resetBtn" class="bg-gray-400 text-white px-3 py-1 mr-2 rounded w-1/2">Скинути</button>
+            <button type="button" id="startBtn" class="bg-green-500 text-white px-3 py-1 rounded w-1/2">Старт</button>
+            <button type="button" id="stopBtn" class="bg-red-500 text-white px-3 py-1 rounded w-1/2" style="display:none">Стоп</button>
+		</div>
+	</div>
+    <label for="hit" class="block text-sm font-medium mb-1">Влучання</label>
+	<div class="mb-4 flex items-center space-x-2">
+	<input id="hit" name="hit" type="number" min="0" value="0" class="w-1/2 px-3 py-1 rounded border text-center" required />
+		<button type="button" id="hitMinusBtn" class="bg-gray-500 text-white w-1/4 px-3 py-1 rounded">-1</button>
+		<button type="button" id="hitPlusBtn" class="bg-red-500 text-white w-1/4 px-3 py-1 rounded">+1</button>
+	</div>
+	<button class="bg-blue-500 text-white px-4 py-2 mt-4 rounded w-full" type="submit">Зберегти</button>
+	</form>
+
+	<a href="/" id="backLink" class="block text-center text-gray-500 mt-4">Назад</a>
+
+	<script>
+	// Track if form has unsaved changes
+	let isDirty = false;
+	const form = document.querySelector('form');
+	// Mark dirty on any input change
+	form.addEventListener('input', () => { isDirty = true; });
+	// Mark clean on submit
+	form.addEventListener('submit', () => { isDirty = false; });
+
+	// Warn on reload or navigation
+	window.addEventListener('beforeunload', function (e) {
+		if (isDirty) {
+			e.preventDefault();
+			e.returnValue = '';
+			return '';
+		}
+	});
+
+	// Intercept back link to trigger default beforeunload dialog
+	document.getElementById('backLink').addEventListener('click', function(e) {
+		if (isDirty) {
+			// Let navigation proceed, browser will show beforeunload dialog
+			// Use location.assign to trigger beforeunload
+			e.preventDefault();
+			window.location.assign(this.href);
+		}
+	});
+	let timer = null;
+	let startTimestamp = 0;
+	let elapsed = 0;
+
+	const minInput = document.getElementById('minutes');
+	const secInput = document.getElementById('seconds');
+	const msInput = document.getElementById('milliseconds');
+	const startBtn = document.getElementById('startBtn');
+	const stopBtn = document.getElementById('stopBtn');
+	const resetBtn = document.getElementById('resetBtn');
+
+	function updateInputs(ms) {
+		const minutes = Math.floor(ms / 60000);
+		const seconds = Math.floor((ms % 60000) / 1000);
+		const milliseconds = ms % 1000;
+		minInput.value = minutes;
+		secInput.value = seconds;
+		msInput.value = milliseconds;
+	}
+
+	function getInputsMs() {
+		const min = parseInt(minInput.value) || 0;
+		const sec = parseInt(secInput.value) || 0;
+		const ms = parseInt(msInput.value) || 0;
+		return min * 60000 + sec * 1000 + ms;
+	}
+
+	function tick() {
+		const now = Date.now();
+		const diff = now - startTimestamp + elapsed;
+		updateInputs(diff);
+	}
+
+
+	function toggleButtons(running) {
+		startBtn.style.display = running ? 'none' : '';
+		stopBtn.style.display = running ? '' : 'none';
+	}
+
+	startBtn.addEventListener('click', () => {
+		if (timer) return;
+		startTimestamp = Date.now();
+		elapsed = getInputsMs();
+		timer = setInterval(tick, 31);
+		toggleButtons(true);
+		isDirty = true;
+	});
+
+	stopBtn.addEventListener('click', () => {
+		if (!timer) return;
+		clearInterval(timer);
+		timer = null;
+		// Update elapsed to current value
+		const now = Date.now();
+		elapsed = now - startTimestamp + elapsed;
+		updateInputs(elapsed);
+		toggleButtons(false);
+	});
+
+	resetBtn.addEventListener('click', () => {
+		if (timer) {
+			clearInterval(timer);
+			timer = null;
+			toggleButtons(false);
+		}
+		elapsed = 0;
+		updateInputs(0);
+	});
+	// Ensure correct button is shown on load
+	toggleButtons(false);
+
+	// Hit counter logic
+	const hitInput = document.getElementById('hit');
+	const hitMinusBtn = document.getElementById('hitMinusBtn');
+	const hitPlusBtn = document.getElementById('hitPlusBtn');
+	hitPlusBtn.addEventListener('click', () => {
+		let val = parseInt(hitInput.value) || 0;
+		hitInput.value = val + 1;
+		isDirty = true;
+	});
+	hitMinusBtn.addEventListener('click', () => {
+		let val = parseInt(hitInput.value) || 0;
+		if (val > 0) {
+			hitInput.value = val - 1;
+		}
+	});
+	</script>
