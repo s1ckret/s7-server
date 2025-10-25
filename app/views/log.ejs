@@ -17,7 +17,7 @@
                     <th class="border-b border-r px-1">Влучання</th>
                     <th class="border-b px-1">Час</th>
                     <% if (currentUser && currentUser.admin) { %>
-                        <th></th>
+                        <th class="border-l border-b px-1"></th>
                     <% } %>
                 </tr>
             </thead>
@@ -41,10 +41,10 @@
                     <span><%= min %>:<%= sec.toString().padStart(2, '0') %>.<%= milli.toString().padStart(3, '0') %></span>
                 </td>
                 <% if (currentUser && currentUser.admin) { %>
-                  <td class="border py-1 px-1">
-                    <form method="POST" action="/log/<%= record.id %>" style="display:inline" onsubmit="return confirm('Видалити запис?');">
-                      <input type="hidden" name="_csrf" value="<%= _csrfToken %>">
-                      <button type="submit" class="text-red-600 font-bold text-xl" title="Видалити">×</button>
+                  <td class="border-l py-1 px-1">
+                    <form method="POST" action="/log/<%= record.id %>" style="display:inline" onsubmit="return confirm('Видалити запис?\nКоли: <%= record.submitted_at %>\nСтрілець: <%= record.callsign %>');">
+                        <input type="hidden" name="_csrf" value="<%= _csrfToken %>">
+                        <button type="submit" class="text-red-600 font-bold text-xl" title="Видалити">×</button>
                     </form>
                   </td>
                 <% } %>

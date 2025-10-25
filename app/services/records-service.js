@@ -1,5 +1,8 @@
 import { db } from "./db.js";
 
+import { User } from "./users-service.js";
+import { Drill } from "./drills-service.js";
+
 const TABLE_NAME = "records";
 
 export class Record {
@@ -40,6 +43,16 @@ export class Record {
                 hit: record.hit
             });
             record.id = id;
+            // Update user's totals after adding a record
+            const user = await User.get(record.user_id);
+            const drill = await Drill.get(record.drill_id);
+            if (user && drill) {
+                await User.update(record.user_id, {
+                    total_ammo: user.total_ammo + (drill.ammo || 0),
+                    total_hit: user.total_hit + (record.hit || 0),
+                    total_drill_time_ms: user.total_drill_time_ms + (record.time_ms || 0)
+                });
+            }
             return record;
         } catch (error) {
             throw error;
@@ -93,7 +106,21 @@ export class Record {
 
     static async delete(recordId) {
         try {
+            // Get record before deleting
+            const record = await Record.get(recordId);
             await db(TABLE_NAME).where({ id: recordId }).del();
+            // Update user's totals after deleting a record
+            if (record) {
+                const user = await User.get(record.user_id);
+                const drill = await Drill.get(record.drill_id);
+                if (user && drill) {
+                    await User.update(record.user_id, {
+                        total_ammo: Math.max(0, user.total_ammo - (drill.ammo || 0)),
+                        total_hit: Math.max(0, user.total_hit - (record.hit || 0)),
+                        total_drill_time_ms: Math.max(0, user.total_drill_time_ms - (record.time_ms || 0))
+                    });
+                }
+            }
         } catch (error) {
             throw error;
         }
