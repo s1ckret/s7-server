@@ -30,6 +30,7 @@ import { requireAuth } from './middleware/requireAuth.js';
 import { db } from './services/db.js';
 import drillRouter from './routes/drills.js';
 import timeRouter from './routes/time.js';
+import logRouter from './routes/log.js';
 
 var app = express();
 app.enable("trust proxy");
@@ -118,6 +119,7 @@ app.use('/', waitForApproveRouter);
 app.use('/', bannedRouter);
 app.use('/', drillRouter);
 app.use('/', timeRouter);
+app.use('/', logRouter);
 app.use('/', function (req, res, next) {
   if (req.user && req.user.admin) {
     next()

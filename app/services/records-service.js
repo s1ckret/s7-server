@@ -12,6 +12,23 @@ export class Record {
         this.hit = data.hit;
     }
 
+    /**
+     * List all records in a date range, ordered by submitted_at
+     * @param {string} startIso - Start date/time (inclusive, 'YYYY-MM-DD HH:mm:ss')
+     * @param {string} endIso - End date/time (exclusive, 'YYYY-MM-DD HH:mm:ss')
+     * @returns {Promise<Record[]>}
+     */
+    static async listByDateRange(startIso, endIso) {
+        try {
+            const rows = await db(TABLE_NAME)
+                .whereBetween('submitted_at', [startIso, endIso])
+                .orderBy('submitted_at', 'asc');
+            return rows.map(row => new Record(row));
+        } catch (error) {
+            throw error;
+        }
+    }
+
     static async create(recordData) {
         const record = new Record(recordData);
         try {

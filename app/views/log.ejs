@@ -1,0 +1,78 @@
+<div class="h-full">
+    <h1 class="text-xl font-bold text-center mb-4">Журнал</h1>
+    <form id="dateForm" method="GET" action="/log" class="flex items-center justify-center gap-2 text-sm">
+        <button type="button" id="prevDay" class="px-2 py-1 bg-gray-200 rounded">←</button>
+        <input type="date" id="logDate" name="date" class="border rounded px-2 py-1"
+            value="<%= typeof selectedDate !== 'undefined' ? selectedDate : (new Date().toISOString().slice(0,10)) %>" />
+        <button type="button" id="nextDay" class="px-2 py-1 bg-gray-200 rounded">→</button>
+        <button type="submit" class="px-3 py-1 bg-blue-500 text-white rounded">Показати</button>
+    </form>
+    <div class="mt-4 pb-4">
+        <table class="w-full text-xs">
+            <thead>
+                <tr>
+                    <th>Коли</th>
+                    <th>Вправа</th>
+                    <th>Стрілець</th>
+                    <th>Влучання</th>
+                    <th>Час</th>
+                    <% if (currentUser && currentUser.admin) { %>
+                        <th></th>
+                    <% } %>
+                </tr>
+            </thead>
+            <tbody class="text-xs text-center">
+            <% if (records && records.length) { %>
+            <% records.forEach((record) => { %>
+                <tr class="odd:bg-gray-50">
+                <td class="border py-1"><%= record.submitted_at %></td>
+                <td class="border py-1"><%= record.drill_name %></td>
+                <td class="border py-1"><%= record.callsign %></td>
+                <td class="border py-1">
+                    <span class="font-mono"><%= record.hit %> / <%= record.drill_ammo %></span>
+                </td>
+                <td class="border py-1">
+                    <% 
+                    const ms = record.time_ms || 0;
+                    const min = Math.floor(ms / 60000);
+                    const sec = Math.floor((ms % 60000) / 1000);
+                    const milli = ms % 1000;
+                    %>
+                    <span><%= min %>:<%= sec.toString().padStart(2, '0') %>.<%= milli.toString().padStart(3, '0') %></span>
+                </td>
+                <% if (currentUser && currentUser.admin) { %>
+                  <td class="border py-1 px-1">
+                    <form method="POST" action="/log/<%= record.id %>" style="display:inline" onsubmit="return confirm('Видалити запис?');">
+                      <input type="hidden" name="_csrf" value="<%= _csrfToken %>">
+                      <button type="submit" class="text-red-600 font-bold text-xl" title="Видалити">×</button>
+                    </form>
+                  </td>
+                <% } %>
+                </tr>
+            <% }) %>
+            <% } else { %>
+            <tr>
+                <td colspan="6" class="text-center text-gray-400 py-4">Логів не знайдено.</td>
+            </tr>
+            <% } %>
+        </tbody>
+        </tanble>
+    </div>
+</div>
+
+
+<script>
+    const dateInput = document.getElementById('logDate');
+    const prevBtn = document.getElementById('prevDay');
+    const nextBtn = document.getElementById('nextDay');
+    const form = document.getElementById('dateForm');
+
+    function changeDate(days) {
+        const date = new Date(dateInput.value);
+        date.setDate(date.getDate() + days);
+        dateInput.value = date.toISOString().slice(0, 10);
+        form.submit();
+    }
+    prevBtn.addEventListener('click', () => changeDate(-1));
+    nextBtn.addEventListener('click', () => changeDate(1));
+</script>
