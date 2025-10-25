@@ -29,11 +29,11 @@
 	<div class="mb-4">
 		<label class="block text-sm font-medium mb-1">Секундомір</label>
 		<div class="flex space-x-2 justify-center items-center mb-2">
-			<input id="minutes" type="number" min="0" max="59" maxlength="2" value="0" class="w-24 px-4 py-2 rounded border text-center text-4xl" placeholder="Хв" required />
+			<input id="minutes" name="minutes" type="number" min="0" max="59" maxlength="2" value="0" class="w-24 px-4 py-2 rounded border text-center text-4xl" placeholder="Хв" required />
 			<span class="self-center text-4xl font-bold">:</span>
-			<input id="seconds" type="number" min="0" max="59" maxlength="2" value="0" class="w-24 px-4 py-2 rounded border text-center text-4xl" placeholder="Сек" required />
+			<input id="seconds" name="seconds" type="number" min="0" max="59" maxlength="2" value="0" class="w-24 px-4 py-2 rounded border text-center text-4xl" placeholder="Сек" required />
 			<span class="self-center text-4xl font-bold">.</span>
-			<input id="milliseconds" type="number" min="0" max="999" maxlength="3" value="0" class="w-28 px-4 py-2 rounded border text-center text-4xl" placeholder="мс" required />
+			<input id="milliseconds" name="milliseconds" type="number" min="0" max="999" maxlength="3" value="0" class="w-28 px-4 py-2 rounded border text-center text-4xl" placeholder="мс" required />
 		</div>
 		<div class="flex w-full">
             <button type="button" id="resetBtn" class="bg-gray-400 text-white px-3 py-1 mr-2 rounded w-1/2">Скинути</button>
@@ -41,9 +41,10 @@
             <button type="button" id="stopBtn" class="bg-red-500 text-white px-3 py-1 rounded w-1/2" style="display:none">Стоп</button>
 		</div>
 	</div>
-    <label for="hit" class="block text-sm font-medium mb-1">Влучання</label>
+	<label for="hit" class="block text-sm font-medium mb-1">Влучання</label>
 	<div class="mb-4 flex items-center space-x-2">
-	<input id="hit" name="hit" type="number" min="0" value="0" class="w-1/2 px-3 py-1 rounded border text-center" required />
+		<input id="hit" name="hit" type="number" min="0" value="0" class="w-1/4 px-3 py-1 rounded border text-center" required />
+		<span class="text-xl w-1/4" id="drillAmmo">/ </span>
 		<button type="button" id="hitMinusBtn" class="bg-gray-500 text-white w-1/4 px-3 py-1 rounded">-1</button>
 		<button type="button" id="hitPlusBtn" class="bg-red-500 text-white w-1/4 px-3 py-1 rounded">+1</button>
 	</div>
@@ -82,6 +83,7 @@
 	let timer = null;
 	let startTimestamp = 0;
 	let elapsed = 0;
+	let maxAmmo = 0;
 
 	const minInput = document.getElementById('minutes');
 	const secInput = document.getElementById('seconds');
@@ -156,7 +158,9 @@
 	const hitPlusBtn = document.getElementById('hitPlusBtn');
 	hitPlusBtn.addEventListener('click', () => {
 		let val = parseInt(hitInput.value) || 0;
-		hitInput.value = val + 1;
+		if (val < maxAmmo) {
+			hitInput.value = val + 1;
+		}
 		isDirty = true;
 	});
 	hitMinusBtn.addEventListener('click', () => {
@@ -165,4 +169,18 @@
 			hitInput.value = val - 1;
 		}
 	});
+
+	// Dynamic drill ammo display
+	const drillSelect = document.getElementById('drill');
+	const drillAmmoSpan = document.getElementById('drillAmmo');
+	// Serialize drills array from server to JS
+	const drillAmmo = <%- JSON.stringify(drills.map(d => ({id: d.id, ammo: d.ammo}))) %>;
+	function updateDrillAmmo() {
+		const selectedId = drillSelect.value;
+		const found = drillAmmo.find(d => String(d.id) === String(selectedId));
+		drillAmmoSpan.textContent = '/ ' + (found ? found.ammo : '');
+		maxAmmo = found ? found.ammo : 0;
+	}
+	drillSelect.addEventListener('change', updateDrillAmmo);
+	updateDrillAmmo();
 	</script>

@@ -6,8 +6,6 @@ import { User } from '../services/users-service.js';
 import { Record } from '../services/records-service.js';
 const router = express.Router();
 
-
-
 router.get('/time', async (req, res, next) => {
   try {
     // Get all drills
@@ -15,14 +13,19 @@ router.get('/time', async (req, res, next) => {
     // Get all users who are approved and not banned
     const users = await User.list({ approved: true, banned: false });
     let success;
+    let error;
     if (req.session && req.session.success) {
       success = req.session.success;
       delete req.session.success;
     }
+    if (req.session && req.session.error) {
+      error = req.session.error;
+      delete req.session.error;
+    }
     // Get selected user and drill from query params
     const selectedUser = req.query.user || '';
     const selectedDrill = req.query.drill || '';
-    res.render('time', { drills, users, success, selectedUser, selectedDrill });
+    res.render('time', { drills, users, success, error, selectedUser, selectedDrill });
   } catch (err) {
     next(err);
   }
@@ -47,6 +50,14 @@ router.post('/time', async (req, res, next) => {
     const ms = parseInt(milliseconds) || 0;
     const time_ms = min * 60000 + sec * 1000 + ms;
     const hitNum = parseInt(hit) || 0;
+    // Do not create record if both time_ms and hitNum are 0
+    if (time_ms === 0 && hitNum === 0) {
+      if (req.session) {
+        req.session.error = 'Час і кількість влучань не можуть бути одночасно нульовими.';
+      }
+      res.redirect(`/time?user=${encodeURIComponent(userId)}&drill=${encodeURIComponent(drillId)}`);
+      return;
+    }
     // Create record
     await Record.create({
       user_id: userId,
@@ -58,7 +69,7 @@ router.post('/time', async (req, res, next) => {
     if (req.session) {
       req.session.success = 'Результат збережено!';
     }
-  res.redirect(`/time?user=${encodeURIComponent(userId)}&drill=${encodeURIComponent(drillId)}`);
+    res.redirect(`/time?user=${encodeURIComponent(userId)}&drill=${encodeURIComponent(drillId)}`);
   } catch (err) {
     next(err);
   }
