@@ -11,11 +11,11 @@
         <table class="w-full text-xs">
             <thead>
                 <tr>
-                    <th>Коли</th>
-                    <th>Вправа</th>
-                    <th>Стрілець</th>
-                    <th>Влучання</th>
-                    <th>Час</th>
+                    <th class="border-b border-r px-1">Коли</th>
+                    <th class="border-b border-r px-1">Вправа</th>
+                    <th class="border-b border-r px-1">Стрілець</th>
+                    <th class="border-b border-r px-1">Влучання</th>
+                    <th class="border-b px-1">Час</th>
                     <% if (currentUser && currentUser.admin) { %>
                         <th></th>
                     <% } %>
@@ -24,14 +24,14 @@
             <tbody class="text-xs text-center">
             <% if (records && records.length) { %>
             <% records.forEach((record) => { %>
-                <tr class="odd:bg-gray-50">
-                <td class="border py-1"><%= record.submitted_at %></td>
-                <td class="border py-1"><%= record.drill_name %></td>
-                <td class="border py-1"><%= record.callsign %></td>
-                <td class="border py-1">
+                <tr class="odd:bg-gray-200">
+                <td class="py-1 border-r"><%= record.submitted_at %></td>
+                <td class="py-1 border-r"><%= record.drill_name %></td>
+                <td class="py-1 border-r"><%= record.callsign %></td>
+                <td class="py-1 border-r">
                     <span class="font-mono"><%= record.hit %> / <%= record.drill_ammo %></span>
                 </td>
-                <td class="border py-1">
+                <td class="py-1">
                     <% 
                     const ms = record.time_ms || 0;
                     const min = Math.floor(ms / 60000);

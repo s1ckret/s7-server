@@ -1,0 +1,57 @@
+<div class="h-full w-full max-w-md mx-auto px-2">
+  <h1 class="text-xl font-bold text-center mb-4">Лідери</h1>
+  <form method="GET" action="/leaderboard" class="flex flex-col gap-2 mb-4">
+    <select name="drill" class="border rounded px-2 py-2 w-full">
+      <% drills.forEach(drill => { %>
+        <option value="<%= drill.id %>" <%= String(selectedDrill) === String(drill.id) ? 'selected' : '' %>><%= drill.name %></option>
+      <% }) %>
+    </select>
+    <div class="flex gap-2 justify-center">
+      <label class="flex items-center gap-1">
+        <input type="radio" name="rankBy" value="hits" <%= rankBy === 'hits' ? 'checked' : '' %> /> Влучання
+      </label>
+      <label class="flex items-center gap-1">
+        <input type="radio" name="rankBy" value="time" <%= rankBy === 'time' ? 'checked' : '' %> /> Час
+      </label>
+      <button type="submit" class="px-3 py-1 bg-blue-500 text-white rounded">Показати</button>
+    </div>
+  </form>
+  <div class="mt-4 pb-4">
+    <table class="w-full text-xs">
+      <thead>
+        <tr>
+          <th class="border-b border-r px-1">#</th>
+          <th class="border-b border-r px-1">Стрілець</th>
+          <th class="border-b border-r px-1">Влучання</th>
+          <th class="border-b px-1">Час</th>
+        </tr>
+      </thead>
+      <tbody class="text-xs text-center">
+        <% if (leaderboard && leaderboard.length) { %>
+          <% leaderboard.forEach(user => { %>
+            <tr class="odd:bg-gray-200">
+              <td class="py-1 border-r font-bold"><%= user.place %></td>
+              <td class="py-1 border-r font-semibold"><%= user.callsign %></td>
+              <td class="py-1 border-r">
+                  <span class="font-mono"><%= user.hit %> / <%= user.drill_ammo %></span>
+              </td>
+              <td class="py-1">
+                <% 
+                  const ms = user.time_ms || 0;
+                  const min = Math.floor(ms / 60000);
+                  const sec = Math.floor((ms % 60000) / 1000);
+                  const milli = ms % 1000;
+                %>
+                <span class="font-mono"><%= min %>:<%= sec.toString().padStart(2, '0') %>.<%= milli.toString().padStart(3, '0') %></span>
+              </td>
+            </tr>
+          <% }) %>
+        <% } else { %>
+          <tr>
+            <td colspan="4" class="text-center text-gray-400 py-4">Немає даних</td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
